@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 18789
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "claude-sonnet-4-20250514"
+      }
+    }
+  },
+  "skills": {
+    "install": {}
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": false
+      }
+    }
+  },
+  "repo": {
+    "name": "AlphaSniper A-Share",
+    "description": "High-precision A-share stock sniper terminal with technical analysis and AI-powered trading recommendations",
+    "skills": [
+      {
+        "name": "ashare-stock-analysis",
+        "description": "Technical analysis using RSI, MACD, MA, EMA indicators",
+        "path": "workspace/skills/ashare-stock-analysis"
+      },
+      {
+        "name": "ashare-ai-analysis",
+        "description": "AI-powered stock analysis using Gemini",
+        "path": "workspace/skills/ashare-ai-analysis"
+      },
+      {
+        "name": "ashare-market-data",
+        "description": "Market data, stock prices and quotes",
+        "path": "workspace/skills/ashare-market-data"
+      },
+      {
+        "name": "ashare-news",
+        "description": "Stock news and sentiment analysis",
+        "path": "workspace/skills/ashare-news"
+      },
+      {
+        "name": "ashare-alerts",
+        "description": "Price alerts and notifications management",
+        "path": "workspace/skills/ashare-alerts"
+      }
+    ]
+  }
+}
