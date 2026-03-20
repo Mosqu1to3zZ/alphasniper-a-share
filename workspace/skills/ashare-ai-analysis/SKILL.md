@@ -1,11 +1,11 @@
 ---
 name: "ashare-ai-analysis"
-description: "Provides AI-powered stock analysis using Gemini. Invoke when user asks for AI analysis, wants trade recommendations, or needs risk assessment for A-share stocks."
+description: "AI-powered stock analysis using Gemini. Invoke when user asks for AI analysis, wants trade recommendations, or needs risk assessment."
 ---
 
 # A-Share AI Stock Analysis
 
-This skill provides AI-powered analysis for A-share stocks using Gemini AI to generate trading recommendations.
+This skill provides AI-powered analysis for A-share stocks using Gemini AI.
 
 ## When to Use This Skill
 
@@ -14,89 +14,55 @@ Invoke this skill when:
 - User wants a buy/sell/watch recommendation
 - User needs confidence score for a trade
 - User asks for risk assessment
-- User wants reasoning based on technicals + fundamentals
 - User asks "should I buy this stock" or similar
 
-## Analysis Components
+## Execution
 
-### Input Data
-Provide the following stock data for analysis:
-- Stock symbol and name
-- Current price and daily change percentage
-- RSI (14-day)
-- MACD (diff, dea, histogram)
-- Moving averages (MA20, MA50, EMA20, EMA50, MA200)
-- Current trend (UP/DOWN/SIDEWAYS)
-- Signal type (BREAKOUT, REVERSAL, MOMENTUM, OVERSOLD)
-- Historical data (last 5 days recommended)
+**This skill uses a Python script to get AI-powered analysis.**
 
-### AI Output Format
+### Command
 
-The AI analysis returns:
-```json
-{
-  "recommendation": "BUY" | "SELL" | "WATCH",
-  "confidence": 0-100,
-  "reasoning": ["reason1", "reason2", "reason3"],
-  "riskLevel": "HIGH" | "MEDIUM" | "LOW"
-}
+```bash
+python3 workspace/skills/ashare-ai-analysis/scripts/ai_analyze.py <stock_symbol>
 ```
+
+### Example
+
+```bash
+python3 workspace/skills/ashare-ai-analysis/scripts/ai_analyze.py 600519
+```
+
+### Output
+
+The script returns JSON with:
+- stock: Stock name and symbol
+- recommendation: BUY/SELL/WATCH
+- confidence: 0-100
+- reasoning: Array of reasons
+- riskLevel: HIGH/MEDIUM/LOW
+- note: Additional information
 
 ## Recommendation Types
 
 - **BUY**: Strong buy signal, favorable risk-reward
 - **SELL**: Consider exiting or shorting
-- **WATCH**: Monitor for better entry point or more confirmation
+- **WATCH**: Monitor for better entry point
 
 ## Confidence Score
 
 - 80-100: High confidence, strong signal
 - 60-79: Medium-high confidence
-- 40-59: Medium confidence, require more analysis
+- 40-59: Medium confidence
 - 0-39: Low confidence, avoid
 
-## Risk Levels
+## Requirements
 
-- **HIGH**: Volatile, uncertain, or unfavorable conditions
-- **MEDIUM**: Moderate risk, careful position sizing recommended
-- **LOW**: Stable setup with good risk-reward ratio
-
-## Usage Examples
-
-### Basic AI Analysis
-When user asks for AI analysis of a stock:
-1. Collect technical indicator data
-2. Format prompt with stock data
-3. Call Gemini API with structured response schema
-4. Parse and present results
-
-### Prompt Template
-```
-Analyze the following A-Share stock for a sniper trade setup.
-Stock: {name} ({symbol})
-Current Price: {price}
-Change: {changePercent}%
-Current RSI: {rsi}
-EMA20: {ema20}
-Trend: {trend}
-Signal: {signal}
-
-Recent Historical Data (Last 5 days):
-{historicalData}
-
-Based on this data, provide a trade recommendation. Consider the trend, RSI levels, MACD momentum, and recent price action.
-```
-
-## Integration with AlphaSniper
-
-This skill is integrated with the AlphaSniper A-Share terminal:
-- Uses `geminiService.ts` for API calls
-- Supports demo mode when API key is missing
-- Returns structured JSON for programmatic use
+1. The AlphaSniper server must be running (`npm run server`)
+2. Set GEMINI_API_KEY in .env.local for full AI functionality
+3. Without API key, returns demo mode analysis
 
 ## Notes
 
 - Requires GEMINI_API_KEY for full functionality
-- In demo mode, returns simulated analysis
-- For pure technical analysis without AI, use `ashare-stock-analysis` skill
-- Always combine AI analysis with personal research
+- For pure technical analysis, use `ashare-stock-analysis` skill
+- For news, use `ashare-news` skill

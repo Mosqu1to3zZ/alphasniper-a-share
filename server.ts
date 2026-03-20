@@ -6,9 +6,14 @@ import iconv from "iconv-lite";
 import { REAL_A_SHARES } from "./constants";
 import { Trend, SignalType, StockData } from "./types";
 import { RSI, MACD, SMA, EMA } from "technicalindicators";
+import { fetchStockNews } from "./services/newsService";
+import { analyzeStockWithGemini } from "./services/geminiService";
 
 const app = express();
 const PORT = 3000;
+
+// Parse JSON bodies
+app.use(express.json());
 
 // Helper to determine the prefix for Tencent API
 const getPrefix = (code: string) => {
@@ -220,16 +225,95 @@ app.get("/api/stocks", async (req, res) => {
   }
 });
 
+app.get("/api/stock/analysis/:symbol", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const stock = stockCache.find(s => s.symbol === symbol);
+    
+    if (!stock) {
+      return res.status(404).json({ error: "Stock not found in cache. Try again later." });
+    }
+    
+    const analysis = await analyzeStockWithGemini(stock);
+    res.json(analysis);
+  } catch (error) {
+    console.error("Error analyzing stock:", error);
+    res.status(500).json({ error: "Failed to analyze stock" });
+  }
+});
+
+app.get("/api/stock/news/:symbol", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const stock = stockCache.find(s => s.symbol === symbol);
+    
+    if (!stock) {
+      const stockInfo = REAL_A_SHARES.find(s => s.code === symbol);
+      if (!stockInfo) {
+        return res.status(404).json({ error: "Stock not found" });
+      }
+      stock = {
+        id: symbol,
+        symbol: symbol,
+        name: stockInfo.name,
+        sector: stockInfo.sector
+      } as StockData;
+    }
+    
+    const news = await fetchStockNews(stock);
+    res.json(news);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    res.status(500).json({ error: "Failed to fetch news" });
+  }
+});
+
+app.get("/api/stock/tech/:symbol", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const stock = stockCache.find(s => s.symbol === symbol);
+    
+    if (!stock) {
+      return res.status(404).json({ error: "Stock not found in cache. Try again later." });
+    }
+    
+    res.json({
+      symbol: stock.symbol,
+      name: stock.name,
+      price: stock.price,
+      changePercent: stock.changePercent,
+      volume: stock.volume,
+      rsi: stock.rsi,
+      macd: stock.macd,
+      ma20: stock.ma20,
+      ma50: stock.ma50,
+      ma200: stock.ma200,
+      ema20: stock.ema20,
+      ema50: stock.ema50,
+      trend: stock.trend,
+      signal: stock.signal,
+      history: stock.history,
+      historicalData: stock.historicalData
+    });
+  } catch (error) {
+    console.error("Error getting technical data:", error);
+    res.status(500).json({ error: "Failed to get technical data" });
+  }
+});
+
 async function startServer() {
   // Initialize stock cache in the background
   initializeStockCache().catch(console.error);
 
-  // Vite middleware for development
+  // Vite middleware for development - use appType: 'custom' to have more control
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa",
+      appType: "custom",
     });
+    
+    // Use Vite's connect instance as middleware
+    // Important: We need to let API routes pass through before Vite handles them
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');

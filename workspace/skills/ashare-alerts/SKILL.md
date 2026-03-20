@@ -16,6 +16,15 @@ Invoke this skill when:
 - User asks to delete or modify alerts
 - User asks for notification settings
 
+## Current Implementation
+
+**Note: This feature is primarily UI-based in the AlphaSniper terminal.**
+
+Users can set alerts through the web interface:
+- Click on a stock in the terminal
+- Set price alert conditions
+- Receive toast notifications when triggered
+
 ## Alert Data Structure
 
 ### Alert Fields
@@ -34,39 +43,42 @@ Price-based triggers:
 - Volume spike alerts
 - MACD crossover
 
+## Future API Endpoints (Planned)
+
+```
+GET  /api/alerts              - Get all active alerts
+POST /api/alerts              - Create a new alert
+DELETE /api/alerts/:id        - Delete an alert
+```
+
 ## Usage Examples
 
-### Setting an Alert
-When user wants to set a price alert:
-1. Accept stock symbol and trigger condition
-2. Create alert with unique ID
-3. Store timestamp
-4. Confirm alert creation
+### Setting an Alert (UI)
+Currently, alerts can be set through the AlphaSniper web interface:
+1. Open the stock terminal
+2. Click on a stock
+3. Configure alert conditions
+4. Save the alert
 
-### Checking Alerts
-When user asks for active alerts:
-1. List all active alerts
-2. Show trigger conditions
-3. Show creation time
-
-### Alert Management
-- Delete specific alerts
-- Clear all alerts
-- Enable/disable alerts
+### Alert Usage in Analysis
+When providing stock analysis:
+1. Consider setting price alerts for entry/exit points
+2. Set RSI-based alerts for overbought/oversold conditions
+3. Use MACD crossover alerts for trend changes
 
 ## Integration with AlphaSniper
 
 In the AlphaSniper terminal:
 - `AlertToast.tsx`: Toast notifications for alerts
-- Alerts triggered in real-time
+- Alerts triggered in real-time during stock monitoring
 - Visual and audio notifications
 
 ## Response Format
 
 Present alerts in structured format:
 ```
-Active Alerts:
-----------------
+🔔 Active Alerts
+================
 [Stock Name] ([Symbol])
 Trigger: [Trigger Condition]
 Created: [Timestamp]
@@ -78,4 +90,5 @@ Created: [Timestamp]
 - Alerts are stored in application state
 - Alerts trigger toast notifications in UI
 - For persistent alerts, integrate with backend
-- Combine with technical analysis for better alert timing
+- Combine with technical analysis (`ashare-stock-analysis`) for better alert timing
+- Use AI analysis (`ashare-ai-analysis`) for smart alert recommendations

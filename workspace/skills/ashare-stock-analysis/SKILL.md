@@ -16,7 +16,34 @@ Invoke this skill when:
 - User wants to evaluate RSI, MACD, MA, EMA levels
 - User asks about stock breakout or reversal signals
 
-## Technical Indicators Available
+## Execution
+
+**This skill uses a Python script to fetch and analyze stock data.**
+
+### Command
+
+```bash
+python3 workspace/skills/ashare-stock-analysis/scripts/analyze.py <stock_symbol>
+```
+
+### Example
+
+```bash
+python3 workspace/skills/ashare-stock-analysis/scripts/analyze.py 600519
+```
+
+### Output
+
+The script returns JSON with:
+- stock: Stock name and symbol
+- price: Current price and change
+- rsi: RSI value and status (Overbought/Oversold/Neutral)
+- macd: MACD histogram and signal
+- trend: UP/DOWN/SIDEWAYS
+- signal: BREAKOUT/REVERSAL/MOMENTUM/OVERSOLD/NONE
+- analysis: Text summary
+
+## Technical Indicators
 
 ### RSI (Relative Strength Index)
 - **14-day RSI** is used
@@ -48,41 +75,13 @@ Invoke this skill when:
 - **OVERSOLD**: RSI below 30, potential bounce
 - **NONE**: No clear signal
 
-## Usage Examples
+## Requirements
 
-### Analyzing a Stock
-When user provides a stock symbol (e.g., 600519), analyze:
-1. Current price and daily change
-2. RSI level and interpretation
-3. MACD histogram and signal
-4. Price relative to MAs (MA20, MA50, MA200)
-5. Current trend and signal type
-6. Risk assessment
-
-### Screening Criteria
-For stock screening, apply filters:
-- RSI range (min/max)
-- Minimum volume
-- Signal types (BREAKOUT, REVERSAL, etc.)
-- Only uptrend stocks
-- Price above EMA20
-
-## Response Format
-
-Provide analysis in a structured format:
-```
-Stock: [Name] ([Symbol])
-Price: [Price] ([Change]%)
-RSI: [Value] - [Overbought/Oversold/Neutral]
-MACD: [Histogram value] - [Signal interpretation]
-Trend: [UP/DOWN/SIDEWAYS]
-Signal: [BREAKOUT/REVERSAL/MOMENTUM/OVERSOLD/NONE]
-MA Analysis: [Price relative to MAs]
-Risk Level: [HIGH/MEDIUM/LOW]
-```
+1. The AlphaSniper server must be running (`npm run server`)
+2. Python 3 with requests library (optional, falls back to curl)
 
 ## Notes
 
 - This skill focuses on technical analysis only
-- For AI-powered fundamental analysis, use the `ashare-ai-analysis` skill
-- This skill is part of the AlphaSniper A-Share trading terminal
+- For AI-powered analysis, use the `ashare-ai-analysis` skill
+- For news, use the `ashare-news` skill
